@@ -397,7 +397,214 @@ class Solution {
   
     }
 }
-  
+ 
+ 
+ //515. 在每个树行中找最大值
+ /*给定一棵二叉树的根节点 root ，请找出该二叉树中每一层的最大值。
+示例1：
+输入: root = [1,3,2,5,3,null,9]
+输出: [1,3,9]
+解释:
+          1
+         / \
+        3   2
+       / \   \  
+      5   3   9 
+
+示例2：
+输入: root = [1,2,3]
+输出: [1,3]
+解释:
+          1
+         / \
+        2   3
+
+示例3：
+输入: root = [1]
+输出: [1]
+示例4：
+输入: root = [1,null,2]
+输出: [1,2]
+解释:      
+           1 
+            \
+             2     
+
+示例5：
+输入: root = []
+输出: []
+提示：
+    二叉树的节点个数的范围是 [0,104]
+    -231 <= Node.val <= 231 - 1
+*/
+  class Solution {
+    public List<Integer> largestValues(TreeNode root) {
+ 
+ int maxValue=Integer.MIN_VALUE;
+ Queue<TreeNode> queue1=new LinkedList<TreeNode>();
+ Queue<TreeNode> queue2=new LinkedList<TreeNode>();
+ 
+ List<Integer> res=new ArrayList<Integer>();
+ if(root==null){
+ return res;
+ }
+ 
+ queue1.offer(root);
+ while(!queue1.isEmpty()){
+ 
+ TreeNode temp=queue1.poll();
+ 
+ if(temp!=null){
+  maxValue= Math.max(maxValue,temp.val);
+ 
+ if(temp.left!=null){
+ queue2.offer(temp.left);
+ }
+ 
+ if(temp.right!=null){
+ queue2.offer(temp.right);
+ }
+ }
+
+ if(queue1.isEmpty()){
+ res.add(maxValue);
+ queue1=queue2;
+ queue2=new LinkedList<TreeNode>();
+ maxValue=Integer.MIN_VALUE;
+ }
+ 
+ }
+ 
+ return res;
+ 
+
+    }
+}
+ 
+ //116. 填充每个节点的下一个右侧节点指针
+ /*给定一个 完美二叉树 ，其所有叶子节点都在同一层，每个父节点都有两个子节点。二叉树定义如下：
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+初始状态下，所有 next 指针都被设置为 NULL。
+进阶：
+    你只能使用常量级额外空间。
+    使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+示例：
+输入：root = [1,2,3,4,5,6,7]
+输出：[1,#,2,3,#,4,5,6,7,#]
+解释：给定二叉树如图 A 所示，你的函数应该填充它的每个 next 指针，以指向其下一个右侧节点，如图 B 所示。序列化的输出按层序遍历排列，同一层节点由 next 指针连接，'#' 标志着每一层的结束。
+提示：
+    树中节点的数量少于 4096
+    -1000 <= node.val <= 1000
+ */
+ class Solution {
+    public Node connect(Node root) {
+  Queue<Node> queue1=new LinkedList<Node>();
+  Queue<Node> queue2=new LinkedList<Node>();
+  Node prev=null;
+  queue1.offer(root);
+  while(!queue1.isEmpty()){
+ 
+ Node temp=queue1.poll();
+ 
+ if(temp!=null){
+ if(prev!=null){
+ prev.next=temp;
+ }
+ prev=temp;
+ 
+ if(temp.left!=null){
+ queue2.offer(temp.left);
+ }
+ if(temp.right!=null){
+ queue2.offer(temp.right);
+ }
+ 
+ }
+ 
+ if(queue1.isEmpty()){
+ prev=null;
+ queue1=queue2;
+ queue2=new LinkedList<Node>();
+ }
+ 
+ 
+ }
+ 
+ return root;
+ 
+ 
+        
+    }
+}
+ 
+ //117. 填充每个节点的下一个右侧节点指针 II
+ /*给定一个二叉树
+struct Node {
+  int val;
+  Node *left;
+  Node *right;
+  Node *next;
+}
+填充它的每个 next 指针，让这个指针指向其下一个右侧节点。如果找不到下一个右侧节点，则将 next 指针设置为 NULL。
+初始状态下，所有 next 指针都被设置为 NULL。
+进阶：
+
+    你只能使用常量级额外空间。
+    使用递归解题也符合要求，本题中递归程序占用的栈空间不算做额外的空间复杂度。
+示例：
+输入：root = [1,2,3,4,5,null,7]
+输出：[1,#,2,3,#,4,5,7,#]
+解释：给定二叉树如图 A 所示，你的函数应该填充它的每个 next 指针，以指向其下一个右侧节点，如图 B 所示。序列化输出按层序遍历顺序（由 next 指针连接），'#' 表示每层的末尾。
+提示：
+    树中的节点数小于 6000
+    -100 <= node.val <= 100
+*/
+ class Solution {
+    public Node connect(Node root) {
+  Queue<Node> queue1=new LinkedList<Node>();
+  Queue<Node> queue2=new LinkedList<Node>();
+  Node prev=null;
+  queue1.offer(root);
+  while(!queue1.isEmpty()){
+ 
+ Node temp=queue1.poll();
+ 
+ if(temp!=null){
+ if(prev!=null){
+ prev.next=temp;
+ }
+ prev=temp;
+ 
+ if(temp.left!=null){
+ queue2.offer(temp.left);
+ }
+ if(temp.right!=null){
+ queue2.offer(temp.right);
+ }
+ 
+ }
+ 
+ if(queue1.isEmpty()){
+ prev=null;
+ queue1=queue2;
+ queue2=new LinkedList<Node>();
+ }
+ 
+ 
+ }
+ 
+ return root;
+ 
+ 
+        
+    }
+}
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
