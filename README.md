@@ -605,6 +605,211 @@ struct Node {
         
     }
 }
+ //226. 翻转二叉树
+ /*翻转一棵二叉树。
+
+示例：
+输入：
+     4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+输出：
+
+     4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+备注:
+这个问题是受到 Max Howell 的 原问题 启发的 ：
+
+谷歌：我们90％的工程师使用您编写的软件(Homebrew)，但是您却无法在面试时在白板上写出翻转二叉树这道题，这太糟糕了。
+*/
+ class Solution {
+    public TreeNode invertTree(TreeNode root) {
+ recur(root);
+ return root;
+    }
+ 
+ public void recur(TreeNode root){
+ 
+ if(root==null){
+ return;
+ }
+ TreeNode left=root.left;
+ root.left=root.right;
+ root.right=left;
+ recur(root.left);
+ recur(root.right);
+ }
+ 
+}
+ //589. N 叉树的前序遍历
+ /*给定一个 N 叉树，返回其节点值的 前序遍历 。
+N 叉树 在输入中按层序遍历进行序列化表示，每组子节点由空值 null 分隔（请参见示例）。
+进阶：
+递归法很简单，你可以使用迭代法完成此题吗?
+示例 1：
+输入：root = [1,null,3,2,4,null,5,6]
+输出：[1,3,5,6,2,4]
+示例 2：
+输入：root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14]
+输出：[1,2,3,6,7,11,14,4,8,12,5,9,13,10]
+提示：
+N 叉树的高度小于或等于 1000
+节点总数在范围 [0, 10^4] 内
+*/
+ /*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List<Node> children;
+
+    public Node() {}
+
+    public Node(int _val) {
+        val = _val;
+    }
+
+    public Node(int _val, List<Node> _children) {
+        val = _val;
+        children = _children;
+    }
+};
+*/
+ //递归解法
+ class Solution {
+    List<Integer> res=new ArrayList<Integer>();
+    public List<Integer> preorder(Node root) {
+        recur(root);
+        return res;
+    }
+ 
+ public void recur(Node root){
+ if(root==null){
+ return ;
+ }
+ 
+ res.add(root.val);
+ for(Node child : root.children){
+ recur(child);
+ }
+ }
+}
+ //迭代解法
+ class Solution {
+    List<Integer> res=new ArrayList<Integer>();
+ 
+    public List<Integer> preorder(Node root) {
+ 
+ if(root==null){
+ return res;
+ }
+        Deque<Node> stack=new LinkedList<Node>();
+        stack.offer(root);
+ while(!stack.isEmpty()){
+ Node temp=stack.pollLast();
+ //前
+ res.add(temp.val);
+ //将节点的孩子们逆个序,最后添加进去的节点先遍历到
+ Collections.reverse(temp.children);
+ for(Node child : temp.children){
+ stack.addLast(child);
+ }
+ }
+ return res;
+    }
+}
+ 方法：迭代
+由于递归实现 N 叉树的前序遍历较为简单，因此我们只讲解如何使用迭代的方法得到 N 叉树的前序遍历。
+
+我们使用栈来帮助我们得到前序遍历，需要保证栈顶的节点就是我们当前遍历到的节点。
+
+我们首先把根节点入栈，因为根节点是前序遍历中的第一个节点。随后每次我们从栈顶取出一个节点 u，它是我们当前遍历到的节点，并把 u 的所有子节点逆序推入栈中。例如 u 的子节点从左到右为 v1, v2, v3，那么推入栈的顺序应当为 v3, v2, v1，这样就保证了下一个遍历到的节点（即 u 的第一个子节点 v1）出现在栈顶的位置。
+class Solution {
+    public List<Integer> preorder(Node root) {
+        LinkedList<Integer> output = new LinkedList<>();
+        if (root == null) {
+            return output;
+        }
+
+        LinkedList<Node> stack = new LinkedList<>();
+        stack.add(root);
+        while (!stack.isEmpty()) {
+            Node node = stack.pollLast();
+            output.add(node.val);
+            Collections.reverse(node.children);
+            for (Node item : node.children) {
+                stack.add(item);
+            }
+        }
+        return output;
+    }
+}
+ 
+ //590. N 叉树的后序遍历
+ /*给定一个 N 叉树，返回其节点值的 后序遍历 。
+N 叉树 在输入中按层序遍历进行序列化表示，每组子节点由空值 null 分隔（请参见示例）。
+进阶：
+递归法很简单，你可以使用迭代法完成此题吗?
+示例 1：
+输入：root = [1,null,3,2,4,null,5,6]
+输出：[5,6,3,2,4,1]
+示例 2：
+输入：root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14]
+输出：[2,6,14,11,7,3,12,8,4,13,9,10,5,1]
+提示：
+N 叉树的高度小于或等于 1000
+节点总数在范围 [0, 10^4] 内
+*/
+ class Solution {
+    List<Integer> res=new ArrayList<Integer>();
+    public List<Integer> postorder(Node root) {
+        recur(root);
+        return res;
+    }
+ public void recur(Node root){
+ 
+ if(root==null){
+ return;
+ }
+ for(Node child : root.children){
+ recur(child);
+ }
+ res.add(root.val);
+ }
+}
+ 
+class Solution {
+    public List<Integer> postorder(Node root) {
+ 
+ List<Integer> res=new ArrayList<Integer>();
+ if(root==null){
+ return res;
+ }
+ Stack<Node> stack=new Stack<Node>();
+ 
+ stack.push(root);
+ 
+ while(!stack.isEmpty()){
+ 
+ Node temp=stack.pop();
+ //根
+ res.add(temp.val);
+ //右最后进入栈，最先出栈->(根->右->左)
+ for(Node child :temp.children){
+ stack.push(child);
+ }
+ }
+ //反转结果,左->右->根
+ Collections.reverse(res);
+ return res;
+    }
+}
+
+
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
