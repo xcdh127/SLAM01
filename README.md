@@ -160,7 +160,6 @@ class Solution {
   return countNodes(root.left)  + countNodes(root.right) +1;
   }
 }
-  
   //107. 二叉树的层序遍历 II
   /*给定一个二叉树，返回其节点值自底向上的层序遍历。 （即按从叶子节点所在层到根节点所在的层，逐层从左向右遍历）
 例如：
@@ -784,7 +783,6 @@ N 叉树的高度小于或等于 1000
  
 class Solution {
     public List<Integer> postorder(Node root) {
- 
  List<Integer> res=new ArrayList<Integer>();
  if(root==null){
  return res;
@@ -808,7 +806,7 @@ class Solution {
  return res;
     }
 }
-
+                                          
 
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
