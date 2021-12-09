@@ -1195,7 +1195,414 @@ class Solution {
     }
 }
 
+//113. 路径总和 II
+ /*给你二叉树的根节点 root 和一个整数目标和 targetSum ，找出所有 从根节点到叶子节点 路径总和等于给定目标和的路径。
+叶子节点 是指没有子节点的节点。
+示例 1：
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+输出：[[5,4,11,2],[5,8,4,5]]
+示例 2：
+输入：root = [1,2,3], targetSum = 5
+输出：[]
+示例 3：
+输入：root = [1,2], targetSum = 0
+输出：[]
+提示：
+树中节点总数在范围 [0, 5000] 内
+-1000 <= Node.val <= 1000
+-1000 <= targetSum <= 1000
+*/
+ class Solution {
+ int sum=0;
+    public List<List<Integer>> pathSum(TreeNode root, int targetSum) {
+List<List<Integer>> res=new ArrayList<List<Integer>>();
+ LinkedList<Integer> path=new LinkedList<Integer>();
+ recur(res,path,root,targetSum);
+ return res;
+    }
+ 
+ public void recur(List<List<Integer>> res,LinkedList<Integer> path,TreeNode root,int targetSum){
+ if(root==null){
+ return ;
+ }
+ sum+=root.val;
+ path.add(root.val);
+ if(root.left==null && root.right==null && sum==targetSum){
+ res.add(new LinkedList<Integer>(path)); 
+ }
+ recur(res,path,root.left,targetSum);
+ recur(res,path,root.right,targetSum);
+ path.removeLast();
+ sum-=root.val;
+ }
+}
+ //112. 路径总和
+ /*给你二叉树的根节点 root 和一个表示目标和的整数 targetSum 。判断该树中是否存在 
+ 根节点到叶子节点 的路径，这条路径上所有节点值相加等于目标和 targetSum 。如果存在，返回 true ；否则，返回 false 。
+叶子节点 是指没有子节点的节点。
+示例 1：
+输入：root = [5,4,8,11,null,13,4,7,2,null,null,null,1], targetSum = 22
+输出：true
+解释：等于目标和的根节点到叶节点路径如上图所示。
+示例 2：
+输入：root = [1,2,3], targetSum = 5
+输出：false
+解释：树中存在两条根节点到叶子节点的路径：
+(1 --> 2): 和为 3
+(1 --> 3): 和为 4
+不存在 sum = 5 的根节点到叶子节点的路径。
+示例 3：
+输入：root = [], targetSum = 0
+输出：false
+解释：由于树是空的，所以不存在根节点到叶子节点的路径。
+提示：
+树中节点的数目在范围 [0, 5000] 内
+-1000 <= Node.val <= 1000
+-1000 <= targetSum <= 1000
+*/
+ class Solution {
+    public boolean hasPathSum(TreeNode root, int targetSum) {
 
+ return recur(root,targetSum);
+    }
+ public boolean recur(TreeNode root,int targetSum){
+ if(root==null){
+ return false;
+ }
+ if(root.left==null && root.right==null){
+ return root.val==targetSum;
+ }
+ 
+ return recur(root.left,targetSum-root.val) || recur(root.right,targetSum-root.val);
+ 
+ }
+}
+ //106. 从中序与后序遍历序列构造二叉树
+ /*根据一棵树的中序遍历与后序遍历构造二叉树。
+注意:
+你可以假设树中没有重复的元素。
+例如，给出
+中序遍历 inorder = [9(l),3(i),15,20,7(r)]
+后序遍历 postorder = [9(root-(r-i)-1),15,7,20(root-1),3(root)]
+返回如下的二叉树
+    3
+   / \
+  9  20
+    /  \
+   15   7
+*/
+ //中序: 左 根 右
+ //后序: 左 右 根
+ //中序遍历 inorder = [9(l),3(i),15,20,7(r)]
+ //后序遍历 postorder = [9(root-(r-i)-1),15,7,20(root-1),3(root)]
+ class Solution {
+ Map<Integer,Integer> map;
+ int[] postorder;
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+map=new HashMap<Integer,Integer>();
+ this.postorder=postorder;
+ for(int i=0;i<inorder.length;i++){
+ map.put(inorder[i],i);                                   
+ }
+ return recur(postorder,inorder.length-1,0,inorder.length-1);
+ 
+ 
+    }
+ 
+ public TreeNode recur(int[] postorder,int root,int l,int r){
+ if(l>r){
+ return null;
+ }
+ int i=map.get(postorder[root]);
+ TreeNode node=new TreeNode(postorder[root]);
+ node.left=recur(postorder,root-(r-i)-1,l,i-1);
+ node.right=recur(postorder,root-1,i+1,r);
+ return node;
+}
+ 
+ 
+}
+ //105. 从前序与中序遍历序列构造二叉树
+ /*给定一棵树的前序遍历 preorder 与中序遍历  inorder。请构造二叉树并返回其根节点。
+示例 1:
+Input: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+Output: [3,9,20,null,null,15,7]
+示例 2:
+Input: preorder = [-1], inorder = [-1]
+Output: [-1]
+提示:
+1 <= preorder.length <= 3000
+inorder.length == preorder.length
+-3000 <= preorder[i], inorder[i] <= 3000
+preorder 和 inorder 均无重复元素
+inorder 均出现在 preorder
+preorder 保证为二叉树的前序遍历序列
+inorder 保证为二叉树的中序遍历序列
+*/
+ //前序: 根 左 右 preorder = [3(root),9(root+1),20(root+i-l+1),15,7], 
+ //后序: 左 根 右 inorder = [9(l),3(i),15,20,7(r)]
+ class Solution {
+ Map<Integer,Integer> map;
+ int[] preorder;
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+ map=new HashMap<Integer,Integer>();
+ this.preorder=preorder;
+ for(int i=0;i<inorder.length;i++){
+  map.put(inorder[i],i);                                   
+ }
+  return recur(preorder,0,0,inorder.length-1);                                  
+                                 
+    }
+                                    
+ public TreeNode recur(int[] preorder,int root,int l,int r){
+ if(l>r){
+ return null;
+ }                                   
+ 
+ int i=map.get(preorder[root]);
+ TreeNode node=new TreeNode(preorder[root]);
+ node.left=recur(preorder,root+1,l,i-1);
+ node.right=recur(preorder,root+i-l+1,i+1,r);
+ return node;
+ }                                   
+                                    
+                                    
+}
+ //654. 最大二叉树
+ /*给定一个不含重复元素的整数数组 nums 。一个以此数组直接递归构建的 最大二叉树 定义如下：
+二叉树的根是数组 nums 中的最大元素。
+左子树是通过数组中 最大值左边部分 递归构造出的最大二叉树。
+右子树是通过数组中 最大值右边部分 递归构造出的最大二叉树。
+返回有给定数组 nums 构建的 最大二叉树 。
+示例 1：
+输入：nums = [3,2,1,6,0,5]
+输出：[6,3,5,null,2,0,null,null,1]
+解释：递归调用如下所示：
+- [3,2,1,6,0,5] 中的最大值是 6 ，左边部分是 [3,2,1] ，右边部分是 [0,5] 。
+    - [3,2,1] 中的最大值是 3 ，左边部分是 [] ，右边部分是 [2,1] 。
+        - 空数组，无子节点。
+        - [2,1] 中的最大值是 2 ，左边部分是 [] ，右边部分是 [1] 。
+            - 空数组，无子节点。
+            - 只有一个元素，所以子节点是一个值为 1 的节点。
+    - [0,5] 中的最大值是 5 ，左边部分是 [0] ，右边部分是 [] 。
+        - 只有一个元素，所以子节点是一个值为 0 的节点。
+        - 空数组，无子节点。
+示例 2：
+输入：nums = [3,2,1]
+输出：[3,null,2,null,1]
+提示：
+1 <= nums.length <= 1000
+0 <= nums[i] <= 1000
+nums 中的所有整数 互不相同
+*/
+ class Solution {
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+int n=nums.length;
+ return recur(nums,0,n-1);
+    }
+public TreeNode recur(int[] nums,int l,int r){
+ if(l>r){
+ return null;
+ }
+ //当子区间内只有一个节点时,将当前数字作为根节点返回
+ if(l==r){
+ return new TreeNode(nums[l]);
+ }
+ int maxValue=0;
+ int maxIndex=0;
+ //寻找最大值，得到最大值在数组中的下标
+ for(int i=l;i<=r;i++){
+ if(nums[i]>maxValue){
+ maxIndex=i;
+ maxValue=nums[i];
+ }
+ }
+ TreeNode node=new TreeNode(nums[maxIndex]);
+ node.left=recur(nums,l,maxIndex-1);
+ node.right=recur(nums,maxIndex+1,r);
+ return node;
+ } 
+ 
+}
+ 
+ class Solution {
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+        return dc(nums, 0, nums.length - 1);
+    }
+    private TreeNode dc(int[] nums, int start, int end) {
+        //判断区间内没有数字，返回null
+        if (start > end) {
+            return null;
+        }
+        //区间内只有一个数组，返回这个数字作为节点
+        if (start == end) {
+            return new TreeNode(nums[start]);
+        }
+        //寻找区间内最大值下标，并传入之后的两个递归
+        int max = findMaxIndex(nums, start, end);
+        //将下标对应的最大值构建为节点
+        TreeNode node = new TreeNode(nums[max]);
+        //体现分治思想的两个递归
+        node.left = dc(nums, start, max - 1);
+        node.right = dc(nums, max + 1, end);
+        //返回上面构建的最大值节点
+        return node;
+    }
+    private int findMaxIndex(int[] nums, int start, int end) {
+        //假定最大值
+        int maxindex = start;
+        for (int i = start + 1; i <= end; i++) {
+            //有更大的数值，更新maxindex的值
+            if (nums[i] > nums[maxindex]) {
+                maxindex = i;
+            }
+        }
+        return maxindex;
+    }
+}
+//617. 合并二叉树
+ /*给定两个二叉树，想象当你将它们中的一个覆盖到另一个上时，两个二叉树的一些节点便会重叠。
+你需要将他们合并为一个新的二叉树。合并的规则是如果两个节点重叠，那么将他们的值相加作为节点合并后的新值，否则不为 NULL 的节点将直接作为新二叉树的节点。
+示例 1:
+输入: 
+	Tree 1                     Tree 2                  
+          1                         2                             
+         / \                       / \                            
+        3   2                     1   3                        
+       /                           \   \                      
+      5                             4   7                  
+输出: 
+合并后的树:
+	     3
+	    / \
+	   4   5
+	  / \   \ 
+	 5   4   7
+注意: 合并必须从两个树的根节点开始。
+*/
+ class Solution {
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+
+ return recur(root1,root2);
+    }
+ 
+ public TreeNode recur(TreeNode root1,TreeNode root2){
+ 
+ if(root1==null && root2==null){
+ return null;
+ }
+ else if(root1!=null && root2==null){
+ return root1;
+ }
+  else if(root1==null && root2!=null){
+ return root2;
+ }
+ TreeNode node=new TreeNode(root1.val+root2.val);
+ node.left=recur(root1.left,root2.left);
+ node.right=recur(root1.right,root2.right);
+ return node;
+ }
+ 
+}
+ //700. 二叉搜索树中的搜索
+ /*给定二叉搜索树（BST）的根节点和一个值。 你需要在BST中找到节点值等于给定值的节点。 返回以该节点为根的子树。 如果节点不存在，则返回 NULL。
+例如，
+给定二叉搜索树:
+        4
+       / \
+      2   7
+     / \
+    1   3
+和值: 2
+你应该返回如下子树:
+      2     
+     / \   
+    1   3
+在上述示例中，如果要找的值是 5，但因为没有节点值为 5，我们应该返回 NULL。
+*/
+ class Solution {
+ TreeNode res;
+    public TreeNode searchBST(TreeNode root, int val) {
+recur(root,val);
+ return res;
+    }
+ 
+ public void recur(TreeNode root,int val){
+ 
+ if(root==null){
+ return ;
+ }
+ 
+ if(root.val<val){
+ recur(root.right,val);                  
+ }
+ if(root.val>val){
+ recur(root.left,val);
+ }                  
+if(root.val==val){
+ res=root;
+ } 
+ }
+}
+ class Solution {
+    public TreeNode searchBST(TreeNode root, int val) {
+return recur(root,val);
+    }
+ 
+ public TreeNode recur(TreeNode root,int val){
+ 
+ if(root==null || root.val==val){
+ return root;
+ }
+ if(root.val<val){
+ return recur(root.right,val);                  
+ }
+
+ return recur(root.left,val);                  
+           
+ }
+}
+                  
+98. 验证二叉搜索树
+给你一个二叉树的根节点 root ，判断其是否是一个有效的二叉搜索树。
+有效 二叉搜索树定义如下：
+节点的左子树只包含 小于 当前节点的数。
+节点的右子树只包含 大于 当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+示例 1：
+输入：root = [2,1,3]
+输出：true
+示例 2：
+输入：root = [5,1,4,null,null,3,6]
+输出：false
+解释：根节点的值是 5 ，但是右子节点的值是 4 。
+提示：
+树中节点数目范围在[1, 104] 内
+-231 <= Node.val <= 231 - 1
+ class Solution {
+TreeNode prev;                      
+    public boolean isValidBST(TreeNode root) {
+
+TreeNode cur=root;
+Stack<TreeNode> stack=new Stack<TreeNode>();
+ while(!stack.isEmpty() || cur!=null){
+ while(cur!=null){
+ 
+ stack.push(cur);
+ cur=cur.left;
+ }
+ cur=stack.pop();
+ if(prev!=null){
+ if(prev.val>=cur.val){
+ return false;
+ }
+ }
+ prev=cur;
+ cur=cur.right;
+ }
+  return true;
+    }                                   
+}
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
