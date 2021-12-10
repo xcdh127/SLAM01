@@ -1603,6 +1603,467 @@ Stack<TreeNode> stack=new Stack<TreeNode>();
   return true;
     }                                   
 }
+//669. 修剪二叉搜索树
+/*给你二叉搜索树的根节点 root ，同时给定最小边界low 和最大边界 high。通过修剪二叉搜索树，
+	使得所有节点的值在[low, high]中。修剪树不应该改变保留在树中的元素的相对结构（即，如果没有被移除，原有的父代子代关系都应当保留）。 可以证明，存在唯一的答案。
+所以结果应当返回修剪好的二叉搜索树的新的根节点。注意，根节点可能会根据给定的边界发生改变。
+示例 1：
+输入：root = [1,0,2], low = 1, high = 2
+输出：[1,null,2]
+示例 2：
+输入：root = [3,0,4,null,2,null,null,1], low = 1, high = 3
+输出：[3,2,null,1]
+示例 3：
+输入：root = [1], low = 1, high = 2
+输出：[1]
+示例 4：
+输入：root = [1,null,2], low = 1, high = 3
+输出：[1,null,2]
+示例 5：
+输入：root = [1,null,2], low = 2, high = 4
+输出：[2]
+提示：
+树中节点数在范围 [1, 104] 内
+0 <= Node.val <= 104
+树中每个节点的值都是唯一的
+题目数据保证输入是一棵有效的二叉搜索树
+0 <= low <= high <= 104*/
+class Solution {
+    public TreeNode trimBST(TreeNode root, int low, int high) {
+return recur(root,low,high);		       
+    }
+public TreeNode recur(TreeNode root,int low,int high){
+if(root==null){
+return null;		  		       
+}
+//根		       
+//由于根节点的值小于low的值，所以将搜索当前节点的右子树，返回符合条件的头结点
+if(root.val<low){
+TreeNode right=recur(root.right,low,high);
+return right;	
+}
+//由于根节点的值大于high的值，所以将搜索当前节点的左子树，返回符合条件的头结点	
+if(root.val>high){
+TreeNode left=recur(root.left,low,high);
+return left;	
+}	
+//左
+root.left=recur(root.left,low,high);	
+//右
+root.right=recur(root.right,low,high);	
+//将根节点返回	
+return root;	
+}	
+}
+	
+//108. 将有序数组转换为二叉搜索树
+/*给你一个整数数组 nums ，其中元素已经按 升序 排列，请你将其转换为一棵 高度平衡 二叉搜索树。
+高度平衡 二叉树是一棵满足「每个节点的左右两个子树的高度差的绝对值不超过 1 」的二叉树。
+示例 1：
+输入：nums = [-10,-3,0,5,9]
+输出：[0,-3,9,-10,null,5]
+解释：[0,-10,5,null,-3,null,9] 也将被视为正确答案：
+示例 2：
+输入：nums = [1,3]
+输出：[3,1]
+解释：[1,3] 和 [3,1] 都是高度平衡二叉搜索树。
+提示：
+1 <= nums.length <= 104
+-104 <= nums[i] <= 104
+nums 按 严格递增 顺序排列	*/
+class Solution {
+    public TreeNode sortedArrayToBST(int[] nums) {
+        int n=nums.length;
+	return recur(nums,0,n-1);
+    }
+public TreeNode recur(int[] nums,int l,int r){
+if(l>r){
+return null;	 
+}
+int m=(l+r)/2;	
+TreeNode node=new TreeNode(nums[m]);
+node.left=recur(nums,l,m-1);
+node.right=recur(nums,m+1,r);
+return node;	
+}	
+}	
+//538. 把二叉搜索树转换为累加树
+/*给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
+提醒一下，二叉搜索树满足下列约束条件：
+节点的左子树仅包含键 小于 节点键的节点。
+节点的右子树仅包含键 大于 节点键的节点。
+左右子树也必须是二叉搜索树。
+注意：本题和 1038: https://leetcode-cn.com/problems/binary-search-tree-to-greater-sum-tree/ 相同
+示例 1：
+输入：[4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+示例 2：
+输入：root = [0,null,1]
+输出：[1,null,1]
+示例 3：
+输入：root = [1,0,2]
+输出：[3,3,2]
+示例 4：
+输入：root = [3,2,4,1]
+输出：[7,9,4,10]
+提示：
+树中的节点数介于 0 和 104 之间。
+每个节点的值介于 -104 和 104 之间。
+树中的所有值 互不相同 。
+给定的树为二叉搜索树。*/
+//逆中序遍历	
+class Solution {
+int sum;
+    public TreeNode convertBST(TreeNode root) {
+	recur(root);
+	return root;
+    }
+	
+public void recur(TreeNode root){
+if(root==null){
+return ;	
+}
+	
+//右
+recur(root.right);
+//根
+sum+=root.val;
+root.val=sum;
+//左
+recur(root.left);
+}	
+}	
+//77. 组合
+/*给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
+你可以按 任何顺序 返回答案。
+示例 1：
+输入：n = 4, k = 2
+输出：
+[
+  [2,4],
+  [3,4],
+  [2,3],
+  [1,2],
+  [1,3],
+  [1,4],
+]
+示例 2：
+输入：n = 1, k = 1
+输出：[[1]]
+提示：
+1 <= n <= 20
+1 <= k <= n
+*/	
+class Solution {	
+    public List<List<Integer>> combine(int n, int k) {
+
+List<List<Integer>> res=new ArrayList<List<Integer>>();
+LinkedList<Integer> subset=new LinkedList<Integer>();
+	recur(res,subset,n,k,1);
+	return res;
+    }
+public void recur(List<List<Integer>> res,LinkedList<Integer> subset,int n,int k,int index){
+if(index==n+1){
+if(subset.size()==k){
+res.add(new LinkedList<Integer>(subset));	
+}	
+return; 	
+}	
+if(index<n+1){
+recur(res,subset,n,k,index+1);	       
+subset.add(index);
+recur(res,subset,n,k,index+1);	
+subset.removeLast();	
+}
+}	
+}
+//216. 组合总和 III
+/*找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+说明：
+所有数字都是正整数。
+解集不能包含重复的组合。 
+示例 1:
+输入: k = 3, n = 7
+输出: [[1,2,4]]
+示例 2:
+输入: k = 3, n = 9
+输出: [[1,2,6], [1,3,5], [2,3,4]]
+*/	
+class Solution {
+int sum;
+int num=9;	       
+    public List<List<Integer>> combinationSum3(int k, int n) {
+List<List<Integer>> res=new ArrayList<List<Integer>>();
+LinkedList<Integer> subset=new LinkedList<Integer>();	
+	recur(res,subset,k,n,1);
+	return res;
+    }
+public void recur(List<List<Integer>> res,LinkedList<Integer> subset,int k,int n,int index){
+if(sum==n && subset.size()==k){
+res.add(new LinkedList<Integer>(subset));	
+return ;	
+}
+if(sum<n && subset.size()<k && index<=num){
+recur(res,subset,k,n,index+1);	
+sum+=index;					   
+subset.add(index);
+recur(res,subset,k,n,index+1);	
+subset.removeLast();	
+sum-=index;					   
+}	
+	
+}	
+	
+}
+//17. 电话号码的字母组合		
+/*给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+示例 1：
+输入：digits = "23"
+输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
+示例 2：
+输入：digits = ""
+输出：[]
+示例 3：
+输入：digits = "2"
+输出：["a","b","c"]
+提示：
+0 <= digits.length <= 4
+digits[i] 是范围 ['2', '9'] 的一个数字。
+*/	
+class Solution {
+    public List<String> letterCombinations(String digits) {
+
+Map<Character,String> map=new HashMap<Character,String>();
+List<String> res=new ArrayList<String>();
+if(digits.length()==0){
+return res;
+}	
+StringBuilder sb=new StringBuilder();	
+	map.put('2',"abc");	
+	map.put('3',"def");	
+	map.put('4',"ghi");	
+	map.put('5',"jkl");	
+	map.put('6',"mno");	
+	map.put('7',"pqrs");	
+	map.put('8',"tuv");	
+	map.put('9',"wxyz");	
+	recur(res,map,digits,0,sb);
+	return res;
+    }
+	
+public void recur(List<String> res,Map<Character,String> map,String digits,int index,StringBuilder sb){
+	
+if(index==digits.length()){
+res.add(sb.toString());
+return;	
+}
+char ch=digits.charAt(index);
+String str=map.get(ch);
+for(int i=0;i<str.length();i++){
+sb.append(str.charAt(i));				 
+recur(res,map,digits,index+1,sb);				 
+sb.deleteCharAt(sb.length()-1);				 
+}	
+}	
+}
+				 
+//39. 组合总和
+/*给定一个无重复元素的正整数数组 candidates 和一个正整数 target ，找出 candidates 中所有可以使数字和为目标数 target 的唯一组合。
+candidates 中的数字可以无限制重复被选取。如果至少一个所选数字数量不同，则两种组合是唯一的。 
+对于给定的输入，保证和为 target 的唯一组合数少于 150 个。
+示例 1：
+输入: candidates = [2,3,6,7], target = 7
+输出: [[7],[2,2,3]]
+示例 2：
+输入: candidates = [2,3,5], target = 8
+输出: [[2,2,2,2],[2,3,3],[3,5]]
+示例 3：
+输入: candidates = [2], target = 1
+输出: []
+示例 4：
+输入: candidates = [1], target = 1
+输出: [[1]]
+示例 5：
+输入: candidates = [1], target = 2
+输出: [[1,1]]
+提示：
+1 <= candidates.length <= 30
+1 <= candidates[i] <= 200
+candidate 中的每个元素都是独一无二的。
+1 <= target <= 500
+*/	
+class Solution {
+int sum;		 
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+List<List<Integer>> res=new ArrayList<List<Integer>>();
+LinkedList<Integer> subset=new LinkedList<Integer>();
+	recur(res,subset,candidates,target,0);
+	return res;
+    }
+	
+public void recur(List<List<Integer>> res,LinkedList<Integer> subset,int[] candidates, int target,int index){
+
+if(sum==target){
+res.add(new LinkedList<Integer>(subset));
+return;	
+}	
+if(index==candidates.length){
+return;	
+}
+if(sum<target){
+recur(res,subset,candidates,target,index+1);
+sum+=candidates[index];		
+subset.add(candidates[index]);
+recur(res,subset,candidates,target,index);	
+subset.removeLast();
+sum-=candidates[index];		
+}		
+}		
+}
+//40. 组合总和 II
+/*给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+candidates 中的每个数字在每个组合中只能使用一次。
+注意：解集不能包含重复的组合。 
+示例 1:
+输入: candidates = [10,1,2,7,6,1,5], target = 8,
+输出:
+[
+[1,1,6],
+[1,2,5],
+[1,7],
+[2,6]
+]
+示例 2:
+输入: candidates = [2,5,2,1,2], target = 5,
+输出:
+[
+[1,2,2],
+[5]
+]
+提示:
+1 <= candidates.length <= 100
+1 <= candidates[i] <= 50
+1 <= target <= 30
+*/	
+class Solution {
+int sum;		
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+Arrays.sort(candidates);
+	List<List<Integer>> res=new ArrayList<List<Integer>>();
+	LinkedList<Integer> subset=new LinkedList<Integer>();
+	recur(res,subset,candidates,target,0);
+	return res;
+    }
+	
+public void recur(List<List<Integer>> res,LinkedList<Integer> subset,int[] candidates, int target,int index){
+	
+if(sum==target){
+res.add(new LinkedList<Integer>(subset));	
+return;	
+}	
+if(index==candidates.length){
+return;	
+}	
+if(sum<target && index<candidates.length){
+recur(res,subset,candidates,target,getNext(candidates,index));
+subset.add(candidates[index]);
+sum+=candidates[index];	
+recur(res,subset,candidates,target,index+1);	
+subset.removeLast();	
+sum-=candidates[index];	
+}	
+}	
+		
+public int getNext(int[] candidates,int index){
+int next=index;
+while(next<candidates.length && candidates[index]==candidates[next]){
+next++;			     
+}
+return next;			     
+}		
+}	
+			     
+//131. 分割回文串
+/*给你一个字符串 s，请你将 s 分割成一些子串，使每个子串都是 回文串 。返回 s 所有可能的分割方案。
+回文串 是正着读和反着读都一样的字符串。
+示例 1：
+输入：s = "aab"
+输出：[["a","a","b"],["aa","b"]]
+示例 2：
+输入：s = "a"
+输出：[["a"]]
+提示：
+1 <= s.length <= 16
+s 仅由小写英文字母组成
+*/	
+class Solution {
+    public List<List<String>> partition(String s) {
+List<List<String>> res=new ArrayList<List<String>>();
+LinkedList<String> subset=new LinkedList<String>();	
+	recur(res,s,0,subset);
+	return res;
+    }
+	
+public void recur(List<List<String>> res,String s,int index,LinkedList<String> subset){
+if(index==s.length()){
+res.add(new LinkedList<String>(subset));	
+return;	
+}
+	
+if(index<s.length()){
+for(int i=index;i<s.length();i++){
+	if(isHuiWen(s.substring(index,i+1))){
+	subset.add(s.substring(index,i+1));
+	recur(res,s,i+1,subset);
+	subset.removeLast();
+}
+}		      
+}	
+}	
+	
+public boolean isHuiWen(String s){
+int start=0;
+int end=s.length()-1;	
+while(start<end){
+if(s.charAt(start)!=s.charAt(end)){
+return false;	
+}	
+start++;
+end--;		  
+}
+return true;		  
+}	
+}
+//93. 复原 IP 地址
+/*有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址。
+给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能的有效 IP 地址，这些地址可以通过在 s 中插入 '.' 来形成。
+你不能重新排序或删除 s 中的任何数字。你可以按 任何 顺序返回答案。
+示例 1：
+输入：s = "25525511135"
+输出：["255.255.11.135","255.255.111.35"]
+示例 2：
+输入：s = "0000"
+输出：["0.0.0.0"]
+示例 3：
+输入：s = "1111"
+输出：["1.1.1.1"]
+示例 4：
+输入：s = "010010"
+输出：["0.10.0.10","0.100.1.0"]
+示例 5：
+输入：s = "101023"
+输出：["1.0.10.23","1.0.102.3","10.1.0.23","10.10.2.3","101.0.2.3"]
+提示：
+0 <= s.length <= 20
+s 仅由数字组成
+*/	
+class Solution {
+    public List<String> restoreIpAddresses(String s) {
+List<String> res=new ArrayList<String>();
+    }
+}		  
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
