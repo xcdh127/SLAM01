@@ -2062,8 +2062,121 @@ s 仅由数字组成
 class Solution {
     public List<String> restoreIpAddresses(String s) {
 List<String> res=new ArrayList<String>();
+recur(res,"","",s,0,0);	
+return res;	
     }
-}		  
+	
+public void recur(List<String> res,String curIp,String part,String s,int partId,int index){
+if(partId==3 && isValid(part) && index==s.length()){
+res.add(curIp+part);
+return;	
+}
+if(index<s.length()){
+char ch=s.charAt(index);	
+if(partId<=3){
+if(isValid(part+ch+"")){
+recur(res,curIp,part+ch+"",s,partId,index+1);	      
+}	      
+}
+if(partId<3 && part.length()>0){
+recur(res,curIp+part+".",ch+"",s,partId+1,index+1);	
+}	      		      
+}	      
+}
+	
+public boolean isValid(String s){
+if(s.charAt(0)=='0' && s.length()>1 || Integer.valueOf(s)>255){
+return false;	
+}
+return true;	
+}	
+}	
+//78. 子集
+/*给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+示例 1：
+输入：nums = [1,2,3]
+输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+示例 2：
+输入：nums = [0]
+输出：[[],[0]]
+提示：
+1 <= nums.length <= 10
+-10 <= nums[i] <= 10
+nums 中的所有元素 互不相同
+*/
+class Solution {
+    public List<List<Integer>> subsets(int[] nums) {
+List<List<Integer>> res=new ArrayList<List<Integer>>();
+LinkedList<Integer> subset=new LinkedList<Integer>();
+recur(res,subset,nums,0);
+return res;	
+    }
+	
+public void recur(List<List<Integer>> res,LinkedList<Integer> subset,int[] nums,int index){
+if(index==nums.length){
+res.add(new LinkedList<Integer>(subset));	
+return;
+}
+recur(res,subset,nums,index+1);
+subset.add(nums[index]);
+recur(res,subset,nums,index+1);	
+subset.removeLast();	
+}	
+	
+}	
+//491. 递增子序列
+/*给你一个整数数组 nums ，找出并返回所有该数组中不同的递增子序列，递增子序列中 至少有两个元素 。你可以按 任意顺序 返回答案。
+数组中可能含有重复元素，如出现两个整数相等，也可以视作递增序列的一种特殊情况。
+示例 1：
+输入：nums = [4,6,7,7]
+输出：[[4,6],[4,6,7],[4,6,7,7],[4,7],[4,7,7],[6,7],[6,7,7],[7,7]]
+示例 2：
+输入：nums = [4,4,3,2,1]
+输出：[[4,4]]
+提示：
+1 <= nums.length <= 15
+-100 <= nums[i] <= 100
+*/	
+class Solution {
+    public List<List<Integer>> findSubsequences(int[] nums) {
+
+    }
+	
+public void recur(List<List<Integer>> res,LinkedList<Integer> subset,int[] nums,int index){
+if(index==nums.length){
+if(isTrue(subset)){
+res.add(new LinkedList<Integer>(subset));	
+}
+return ;	
+}
+	
+recur(res,subset,nums,index+1);	
+subset.add(nums[index]);
+recur(res,subset,nums,index+1);	
+subset	
+}	
+	
+	
+	
+public boolean isTrue(LinkedList<Integer> subset){
+int size=subset.size();
+int[] arr=new int[size];
+int index=0;	
+for(int num : subset){
+arr[index++]=num;	
+}	
+for(int i=0;i<arr.length-1;i++){
+if(arr[i]>arr[i+1]){
+return false;	
+}				 
+}
+return true;	
+}		
+	
+}
+	
+	
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
