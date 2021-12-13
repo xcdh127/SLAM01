@@ -2398,6 +2398,552 @@ class Solution {
 	      return Math.min(dp[n-1][0],dp[n-1][1]);
     }
 }   
+	
+//剑指 Offer II 093. 最长斐波那契数列
+/*如果序列 X_1, X_2, ..., X_n 满足下列条件，就说它是 斐波那契式 的：
+n >= 3
+对于所有 i + 2 <= n，都有 X_i + X_{i+1} = X_{i+2}
+给定一个严格递增的正整数数组形成序列 arr ，找到 arr 中最长的斐波那契式的子序列的长度。如果一个不存在，返回  0 。
+（回想一下，子序列是从原序列  arr 中派生出来的，它从 arr 中删掉任意数量的元素（也可以不删），而不改变其余元素的顺序。例如， [3, 5, 8] 是 [3, 4, 5, 6, 7, 8] 的一个子序列）
+示例 1：
+输入: arr = [1,2,3,4,5,6,7,8]
+输出: 5
+解释: 最长的斐波那契式子序列为 [1,2,3,5,8] 。
+示例 2：
+输入: arr = [1,3,7,11,12,14,18]
+输出: 3
+解释: 最长的斐波那契式子序列有 [1,11,12]、[3,11,14] 以及 [7,11,18] 。
+提示：
+3 <= arr.length <= 1000
+1 <= arr[i] < arr[i + 1] <= 10^9*/
+//定义f(i,j)表示以j为倒数第2个字符，i为倒数第一个字符的斐波那契子序列的长度
+//我们需要在0~j内寻找数字k,使得	
+class Solution {
+    public int lenLongestFibSubseq(int[] arr) {
+
+	
+	int length=2;
+	int n=arr.length;
+	int[][] dp=new int[n][n];
+	int maxLen=Integer.MIN_VALUE;
+	Map<Integer,Integer> map=new HashMap<>();
+	for(int i=0;i<n;i++){
+	map.put(arr[i],i);					  
+	}
+	for(int i=1;i<n;i++){
+	for(int j=0;j<n-1;j++){
+	int k=map.getOrDefault(arr[i]-arr[j],-1);
+	
+	if(k>=0 && k<j){
+	dp[i][j]=Math.max(dp[j][k]+1,dp[i][j]);		 
+	}
+	else{
+	dp[i][j]=2;		
+	}		 
+	maxLen=Math.max(maxLen,dp[i][j]);			
+	}
+	
+	}
+	
+	return maxLen>2?maxLen:0;
+	
+	
+    }
+}
+	//我们定义f(i,j)表示,以下标i为最后一个数字,以下标j为倒数第二个数字形成的斐波那契数列的长度;
+//A[i]表示下标为i的数字,A[j]表示下标为j的数字(0<=j<i),
+//如果能在(0,j)之间找到一个下标位置k(0<=k<j),使得A[k]+A[j]=A[i]那么就构成了一个斐波那栔数列;
+//此时斐波那契数列的长度是在以A[j]为倒数第一个字符,A[k]为倒数第二个字符的斐波那契字符的长度的基础上+1;
+//f(i,j)=f(j,k)+1;(关键就是寻找这个k值,使得A[k]+A[j]=A[i])
+//由于状态转移方程存在两个变量,所以我们定义一个二维数组来缓存数据;
+//定义dp数组,为一个二维数组int[arr.length][arr.length];
+	class Solution {
+    public int lenLongestFibSubseq(int[] arr) {
+
+    	int length=2;
+    	Map<Integer,Integer> map=new HashMap<Integer,Integer>();
+        for(int i=0;i<arr.length;i++){
+        	map.put(arr[i],i);
+
+        }
+
+        int[][] dp=new int[arr.length][arr.length];
+        for(int i=1;i<arr.length;i++){
+        	for(int j=0;j<i;j++){
+
+        		int k=map.getOrDefault(arr[i]-arr[j],-1);
+
+        		dp[i][j]=k>=0 && k<j?dp[j][k]+1:2;
+
+        		length=Math.max(length,dp[i][j]);
+        	}
+
+        }
+
+        return length>2?length:0;
+    }
+}
+//115. 不同的子序列	
+/*给定一个字符串 s 和一个字符串 t ，计算在 s 的子序列中 t 出现的个数。
+字符串的一个 子序列 是指，通过删除一些（也可以不删除）字符且不干扰剩余字符相对位置所组成的新字符串。（例如，"ACE" 是 "ABCDE" 的一个子序列，而 "AEC" 不是）
+题目数据保证答案符合 32 位带符号整数范围。
+示例 1：
+输入：s = "rabbbit", t = "rabbit"
+输出：3
+解释：
+如下图所示, 有 3 种可以从 s 中得到 "rabbit" 的方案。
+rabbbit
+rabbbit
+rabbbit
+示例 2：
+输入：s = "babgbag", t = "bag"
+输出：5
+解释：
+如下图所示, 有 5 种可以从 s 中得到 "bag" 的方案。 
+babgbag
+babgbag
+babgbag
+babgbag
+babgbag
+提示：
+0 <= s.length, t.length <= 1000
+s 和 t 由英文字母组成
+*/
+//f(i,j)表示字符串s[0,i]中t[0,j]出现的次数
+//当字符串s[i-1]和字符串t[j-1]的字符相同时,我们有两个选择，(1)不用s[i-1]去匹配t[j-1],相当于删除字符串s第i-1个字符
+//f(i,j)=f(i-1,j)
+//(2)用s[i-1]去匹配t[j-1],相当于两个字符串后面都分别添加一个字符，个数不变f(i,j)=f(i-1,j-1)
+//所以当s[i-1]=t[j-1]时,f(i,j)=f(i-1,j)+f(i-1,j-1)	
+//当字符串s[i-1]和字符串t[j-1]的字符不相同时,只能选择不用字符s[i-1]去匹配字符t[j-1],f(i,j)=f(i-1,j)
+//确定初始值，f(-1,j)表示非空字符串在空字符串中出现的次数，f(-1,j)=0
+//f(i,-1)表示空字符串在非空字符串中出现的次数，f(i,-1)=1;	
+class Solution {
+    public int numDistinct(String s, String t) {
+
+	if(s.length()<t.length()){
+	return 0;
+	}
+	int m=s.length();
+	int n=t.length();			   
+	int[][] dp=new int[m+1][n+1];
+	for(int i=0;i<=m;i++){
+	dp[i][0]=1;
+	}
+	for(int i=0;i<m;i++){
+			      
+	for(int j=0;j<n;j++){
+	if(s.charAt(i)==t.charAt(j)){
+	dp[i+1][j+1]=dp[i][j]+dp[i][j+1];
+	}
+	
+	else if(s.charAt(i)!=t.charAt(j)){
+	
+        dp[i+1][j+1]=dp[i][j+1];
+	}
+	
+	}		      
+        }
+	
+	return dp[m][n];
+    }
+}
+//583. 两个字符串的删除操作
+/*给定两个单词 word1 和 word2，找到使得 word1 和 word2 相同所需的最小步数，每步可以删除任意一个字符串中的一个字符。
+示例：
+输入: "sea", "eat"
+输出: 2
+解释: 第一步将"sea"变为"ea"，第二步将"eat"变为"ea"
+提示：
+给定单词的长度不超过500。
+给定单词中的字符只含有小写字母。*/
+//定义f(i,j)表示字符串word1[0,i]删除一个字符得到word2[0,j]的最小步数
+//当字符串word1[i-1]==字符串word2[j-1]时，此时不需要对字符串做删除,f(i,j)=f(i-1,j-1)
+//当字符串word1[i-1]!=字符串word2[j-1]时,有两种选择(1)删除word1[i-1],f(i,j)=f(i-1,j)+1
+//(2)删除word2[j-1],f(i,j)=f(i,j-1)+1
+//所以f(i,j)=min(f(i-1),f(i,j-1))+1;
+	
+//确定初始值，f(-1,j)空字符串word2通过删除字符得到字符word1,f(-1,j)=word2.length();
+//f(i,-1)空字符串word1通过删除字符得到字符word2,f(i,-1)=word1.length();	
+class Solution {
+    public int minDistance(String word1, String word2) {
+
+	int m=word1.length();
+	int n=word2.length();
+	
+	int[][] dp=new int[m+1][n+1];
+	
+	for(int i=0;i<=m;i++){
+	dp[i][0]=i;		      
+	}
+			      
+	for(int j=0;j<=n;j++){
+	dp[0][j]=j;		      
+	}	
+	
+	for(int i=0;i<m;i++){
+	for(int j=0;j<n;j++){
+	if(word1.charAt(i)==word2.charAt(j)){
+	dp[i+1][j+1]=dp[i][j];
+	}
+	else{
+	dp[i+1][j+1]=Math.min(dp[i+1][j],dp[i][j+1])+1;
+	}
+	
+	}		      
+			      
+	}
+	return dp[m][n];
+    }
+}
+	
+//72. 编辑距离
+/*两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
+你可以对一个单词进行如下三种操作：
+插入一个字符
+删除一个字符
+替换一个字符
+示例 1：
+输入：word1 = "horse", word2 = "ros"
+输出：3
+解释：
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+示例 2：
+输入：word1 = "intention", word2 = "execution"
+输出：5
+解释：
+intention -> inention (删除 't')
+inention -> enention (将 'i' 替换为 'e')
+enention -> exention (将 'n' 替换为 'x')
+exention -> exection (将 'n' 替换为 'c')
+exection -> execution (插入 'u')
+提示：
+0 <= word1.length, word2.length <= 500
+word1 和 word2 由小写英文字母组成	*/
+//我们将对字符串的操作压缩为3种，
+//(1)对字符串word1插入一个字符得到word2
+//(2)对字符串word2插入一个字符得到word1
+//(3)对字符串word1替换一个字符得到word2
+//定义f(i,j)表示字符串word1[0,i]与字符串word2[0,j]相等的最小操作次数	
+//当word1[i-1]==word2[j-1]时，f(i,j)=f(i-1,j-1)
+//当word1[i-1]!=word2[j-1]时，f(i,j)=f(i-1,j-1)+1
+//f(i-1,j)对字符串word2添加末尾添加一个和字符串word1末尾相同的字符f(i,j)=f(i-1,j)+1	
+//f(i,j-1)对字符串word1添加末尾添加一个和字符串word2末尾相同的字符f(i,j)=f(i,j-1)+1
+
+//确定初始值:f(-1,j)表示将空字符串word1通过操作变成word2 f(-1,j)=word2.length
+//f(i,-1)表示将空字符串word2通过操作变成word1 f(i,-1)=word1.length	
+class Solution {
+    public int minDistance(String word1, String word2) {
+
+	int m=word1.length();
+	int n=word2.length();
+	int[][] dp=new int[m+1][n+1];
+	
+	for(int i=0;i<=word1.length();i++){
+	dp[i][0]=i;				   
+	}
+	for(int j=0;j<=word2.length();j++){
+	dp[0][j]=j;				   
+	}				   
+	
+	for(int i=0;i<m;i++){
+	for(int j=0;j<n;j++){
+	
+	if(word1.charAt(i)==word2.charAt(j)){
+	dp[i+1][j+1]=Math.min(Math.min(dp[i][j+1],dp[i+1][j]),dp[i][j]-1)+1;
+	}
+	else{
+	
+	dp[i+1][j+1]=Math.min(Math.min(dp[i][j+1],dp[i+1][j]),dp[i][j])+1;
+	}
+	}		      
+	}
+	
+	return dp[m][n];
+    }
+}	
+	
+//647. 回文子串
+/*给你一个字符串 s ，请你统计并返回这个字符串中 回文子串 的数目。
+回文字符串 是正着读和倒过来读一样的字符串。
+子字符串 是字符串中的由连续字符组成的一个序列。
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
+示例 1：
+输入：s = "abc"
+输出：3
+解释：三个回文子串: "a", "b", "c"
+示例 2：
+输入：s = "aaa"
+输出：6
+解释：6个回文子串: "a", "a", "a", "aa", "aa", "aaa"
+提示：
+1 <= s.length <= 1000
+s 由小写英文字母组成*/
+//定义f(i,j)表示字符串[i,j]是不是回文字符串，当字符串s[i]!=s[j]时，一定不是回文字符串
+//当字符串s[i]==s[j]时，可以分成以下3种情况:
+//(1)i==j时,s[i,j]一定是回文字符串f(i,j)=true
+//(2)j-i=1时,s[i,j]一定是回文字符串 f(i,j)=true
+//(3)j-i>1时，s[i,j]是不是回文字符串取决于 f(i+1,j-1)是true还是false
+//所以递推公式可以表达为
+//s[i]==s[j]时	
+//j-i<=1时:dp[i][j]=true
+//j-i>1时: dp[i][j]=dp[i+1][j-1]		
+//由于递推公式中有i+1是先于i的所以我们的遍历顺序是有所变化
+//我们要从后向前遍历i,又由定义知道j是大于等于i的所以j从i开始遍历
+//确定初始值，初始值设置为false	
+class Solution {
+    public int countSubstrings(String s) {
+
+	int n=s.length();
+	boolean[][] dp=new boolean[n][n];
+	int count=0;
+	//倒序遍历i，为了使用正确的dp[i+1][j-1]推出dp[i][j]
+	for(int i=n;i>=0;i--){
+	//定义时，j是大于等于i的，所以j从i开始遍历
+	for(int j=i;j<n;j++){
+	//只考虑两个字符相同的时候		      
+	if(s.charAt(i)==s.charAt(j)){	      
+	//当j和i相差不超过1时,直接判断为true		      
+	if(j-i<=1){
+	dp[i][j]=true;
+	count++;
+	}
+	//当j和i相差超过1时,此时就要判断dp[i+1][j-1]是不是为true,如果为true，那么此时dp[i][j]就为true
+	if(j-i>1){
+	if(dp[i+1][j-1]){
+	count++;
+	dp[i][j]=true;
+	}
+	}		      
+	}		      	      
+        }
+	}
+	return count;	
+    }
+}	
+	
+	
+//回文串的另外一种判别方式,将一个字符向两边扩展形成回文
+//双指针法	
+class Solution {
+    public int countSubstrings(String s) {
+        int n=s.length();
+	int count=0;
+	for(int i=0;i<n;i++){
+	//记录一个字符形成的回文字符串的个数		      
+	count+=	count(s,i,i);
+	//记录两个相同的字符形成的回文字符串的个数		      
+        count+= count(s,i,i+1);			      
+	}
+	return count;
+	
+    }
+//统计一个字符和两个相同的字符能够形成的回文字符串的个数	
+public int count(String s,int start,int end){
+int count=0;
+while(start>=0 && end<s.length() && s.charAt(start)==s.charAt(end)){
+count++;								     
+start--;
+end++;								     
+}	
+return count;	
+}		
+}	
+				 
+//516. 最长回文子序列
+/*给你一个字符串 s ，找出其中最长的回文子序列，并返回该序列的长度。
+子序列定义为：不改变剩余字符顺序的情况下，删除某些字符或者不删除任何字符形成的一个序列。
+示例 1：
+输入：s = "bbbab"
+输出：4
+解释：一个可能的最长回文子序列为 "bbbb" 。
+示例 2：
+输入：s = "cbbd"
+输出：2
+解释：一个可能的最长回文子序列为 "bb" 。
+提示：
+1 <= s.length <= 1000
+s 仅由小写英文字母组成*/
+//定义f(i,j)表示字符串s[i,j]最长回文子序列的长度
+//当s[i]==s[j]时,f(i,j)=f(i+1,j-1)+2(回文字符串s[i+1,j-1]基础上加上这两个字符后形成的，所以长度+2)
+//当s[i]!=s[j]时,将s[i]添加到字符串中，或者将s[j]添加到字符串中,取两个字符串最长的回文子序列的长度  (i [i+1 ... j-1) j]从图中清晰地看出回文字符串的长度是两者中较大的一个
+//f(i,j)=max(f(i+1,j),f(i,j-1))	
+		    
+//确定初始值:f(i,j)=1,(其中i==j)当i==j时,此时构成长度为1的字符串,一个字符的回文字串长度为1
+//确定遍历顺序,由于递推公式中,f(i,j)=f(i+1,j-1)+2,可以知道遍历顺序是i是倒序遍历的，j要从i开始遍历   
+//最后结果是,f(0,n-1)表示字符串s[0~n-1]中的最长回文子序列		    
+class Solution {
+    public int longestPalindromeSubseq(String s) {
+
+	int n=s.length();
+		    
+        int[][] dp=new int[n][n];
+	//当只有一个字符时，回文串的长度是1	    
+	for(int i=0;i<n;i++){
+	dp[i][i]=1;
+	}
+	//倒序遍历i,由于f(i,j)由f(i+1,j-1)推出
+	for(int i=n-1;i>=0;i--){
+	for(int j=i+1;j<n;j++){
+        //如果字符s[i]==s[j],将这两个字符都添加到字符串中,此时字符串的长度在s[i+1,j-1]的基础上+2			
+	if(s.charAt(i)==s.charAt(j)){
+	dp[i][j]=dp[i+1][j-1]+2;		      
+        }
+	//如果字符s[i]!=s[j],那就不能同时将这两个字符添加进去,将他们一个一个添加进去,此时求出两者最长的子序列长度作为f(i,j)				
+	else{
+	dp[i][j]=Math.max(dp[i+1][j],dp[i][j-1]);		      
+	}		      
+	}
+	}	    
+	return dp[0][n-1];	    
+		    
+    }
+}	
+				
+//5. 最长回文子串
+/*给你一个字符串 s，找到 s 中最长的回文子串。
+示例 1：
+输入：s = "babad"
+输出："bab"
+解释："aba" 同样是符合题意的答案。
+示例 2：
+输入：s = "cbbd"
+输出："bb"
+示例 3：
+输入：s = "a"
+输出："a"
+示例 4：
+输入：s = "ac"
+输出："a"
+提示：
+1 <= s.length <= 1000
+s 仅由数字和英文字母（大写和/或小写）组成*/
+class Solution {
+    public String longestPalindrome(String s) {
+
+	int n=s.length();
+	int maxLen=0;
+	int maxStart=0;
+	int maxEnd=0;
+	String res="";	    
+	for(int i=0;i<n;i++){
+	//由一个字符形成的回文子字符串的长度
+	int len1=recur(s,i,i);
+	//由两个字符形成的回文子字符串的长度
+	int len2=recur(s,i,i+1);
+	//得到形成的子字符串的较长者
+        int len=Math.max(len1,len2);	
+	//如果新形成的子字符串的长度大于之前形成的字符串的长度,那么就将当前字符串替换到之前的字符串
+	if(len>maxLen){
+	maxLen=len;
+	//获取生成的最大的回文串的开始位置
+	maxStart=i-(maxLen-1)/2;         
+	//获取生成的最大的回文串的结束位置
+	maxEnd=i+maxLen/2;
+	//截取当前最大回文字符串
+	res=s.substring(maxStart,maxEnd+1);
+	}
+	}	     
+	return res;	    
+    }
+		    
+		    
+   public int recur(String s,int start,int end){	    
+   while(start>=0 && end<s.length() && s.charAt(start)==s.charAt(end)){
+   start--;
+   end++;				    				    
+  }		    
+   return end-start-1;		    
+  }		    
+}
+//704. 二分查找
+/*给定一个 n 个元素有序的（升序）整型数组 nums 和一个目标值 target  ，写一个函数搜索 nums 中的 target，如果目标值存在返回下标，否则返回 -1。
+示例 1:
+输入: nums = [-1,0,3,5,9,12], target = 9
+输出: 4
+解释: 9 出现在 nums 中并且下标为 4
+示例 2:
+输入: nums = [-1,0,3,5,9,12], target = 2
+输出: -1
+解释: 2 不存在 nums 中因此返回 -1
+提示：
+你可以假设 nums 中的所有元素是不重复的。
+n 将在 [1, 10000]之间。
+nums 的每个元素都将在 [-9999, 9999]之间。*/
+class Solution {
+    public int search(int[] nums, int target) {
+				    
+int n=nums.length;
+int i=0;
+int j=n-1;				    
+while(i<=j){
+int m=(i+j)/2;
+if(nums[m]>target){
+j=m-1;	
+}	
+else if(nums[m]<target){
+i=m+1;	
+}	
+else{
+return m;		
+}	
+}				    
+				    
+return -1;				    
+
+    }
+}	
+			 
+//35. 搜索插入位置
+/*给定一个排序数组和一个目标值，在数组中找到目标值，并返回其索引。如果目标值不存在于数组中，返回它将会被按顺序插入的位置。
+请必须使用时间复杂度为 O(log n) 的算法。
+示例 1:
+输入: nums = [1,3,5,6], target = 5
+输出: 2
+示例 2:
+输入: nums = [1,3,5,6], target = 2
+输出: 1
+示例 3:
+输入: nums = [1,3,5,6], target = 7
+输出: 4
+示例 4:
+输入: nums = [1,3,5,6], target = 0
+输出: 0
+示例 5:
+输入: nums = [1], target = 0
+输出: 0
+提示:
+1 <= nums.length <= 104
+-104 <= nums[i] <= 104
+nums 为无重复元素的升序排列数组
+-104 <= target <= 104*/
+class Solution {
+public int searchInsert(int[] nums, int target) {
+
+	int n=nums.length;
+  int i=0;                   
+  int j=n-1;                   
+  while(i<=j){
+  
+  int m=(i+j)/2;
+  if(nums[m]<=target){
+  i=m+1;                                      
+  }
+  else if(nums[m]>target){
+  j=m-1;
+  }
+   else{
+  return m;
+  }
+  
+  }                   
+                     
+		     
+		     
+		     
+}
+}		    
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
