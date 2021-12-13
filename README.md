@@ -2927,7 +2927,7 @@ public int searchInsert(int[] nums, int target) {
   while(i<=j){
   
   int m=(i+j)/2;
-  if(nums[m]<=target){
+  if(nums[m]<target){
   i=m+1;                                      
   }
   else if(nums[m]>target){
@@ -2936,14 +2936,13 @@ public int searchInsert(int[] nums, int target) {
    else{
   return m;
   }
-  
   }                   
                      
-		     
+	return i;	     
 		     
 		     
 }
-}		    
+}	    
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
