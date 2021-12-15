@@ -3171,20 +3171,21 @@ int n=needle.length();
 if(n==0){
 return 0;				       
 }
-//为字符串needle建立next数组				       
-int[] next=new int[needle.length()];
+//为字符串needle建立next数组，并开始使用next数组				       
+int[] next=new int[needle.length()];				       
 getNext(next,needle);
+//因为前缀数组next是从-1开始的，所以j初始化为-1，				       
 int j=-1;				       
 for(int i=0;i<m;i++){
-//当前缀字符和后缀字符不相等时,回退到前一个位置		
+//当haystack字符串的第i位置的字符与字符串needle第j+1位置的字符与字符不相等时,回退到前一个位置		
 while(j>=0 && haystack.charAt(i)!=needle.charAt(j+1)){
 	j=next[j];
 }	
-//当前缀字符和后缀字符	
+//当字符串haystack的第i位置的与字符串needle第j+1位置的字符相等时,j++,并且将j赋值给next数组i位置上,为了后面的回退使用	
 if(haystack.charAt(i)==needle.charAt(j+1)){
 j++;	
 }
-//在当前字符串中找到目标字符串
+//在当前字符串中找到目标字符串,我们在初始化j时赋值为-1，所以当j为needle长度-1的时候，此时就找到了needle,此时needle字符串在haystack中的位置为i-needle字符串的长度+1
 if(j==needle.length()-1){
 return i-needle.length()+1;	
 }	
@@ -3195,18 +3196,19 @@ return -1;
 				       
 public void getNext(int[] next,String s){
 int j=-1;
-int n=s.length();				       
+int n=s.length();			
+//初始化next数组的值,因为初始值为-1，所以当公共前缀j的长度是needle的长度-1时，这时候在字符串haystack中就就找到了needle
 next[0]=j;
 for(int i=1;i<n;i++){
-//当前缀开始单词与后缀开始字符不相同时，就向前回退	
+//当前缀开始单词与后缀开始字符不相同时，就向前回退，此时在计算j+1,将next[j]赋值给j表明已经回退	
 while(j>=0 && s.charAt(i)!=s.charAt(j+1)){
 j=next[j];	
-
 }	
-//如果前缀开始的字符和后缀开始的字符不相同时,就将j++，然后并且将这个值赋值给对应位置的next数组,来记录这个位置的值
+//如果前缀开始的字符和后缀开始的字符相同时,就将j++，然后并且将这个值赋值给对应位置的next数组,来记录这个最长相同前后缀的值
 if(s.charAt(i)==s.charAt(j+1)){
 j++;	
 }
+//将最长公共前后缀的值赋值给当前位置	
 next[i]=j;	
 }				       
 
