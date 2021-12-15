@@ -3255,6 +3255,231 @@ class Solution {
         return -1;
     }
 }	
+	
+//459. 重复的子字符串
+/*给定一个非空的字符串，判断它是否可以由它的一个子串重复多次构成。给定的字符串只含有小写英文字母，并且长度不超过10000。
+示例 1:
+输入: "abab"
+输出: True
+解释: 可由子字符串 "ab" 重复两次构成。
+示例 2:
+输入: "aba"
+输出: False
+示例 3:
+输入: "abcabcabcabc"
+输出: True
+解释: 可由子字符串 "abc" 重复四次构成。 (或者子字符串 "abcabc" 重复两次构成。)	*/
+class Solution {
+    public boolean repeatedSubstringPattern(String s) {
+	int n=s.length();
+	s=" "+s;
+	//由于加上了空格所以next数组的长度就是n+1
+	int[] next=new int[n+1];
+	//由于在原字符串前添加了空字符串,所以初始化j=0,此时将i=2位置的字符与j=1位置的字符进行比较
+	int j=0;
+	for(int i=2;i<=n;i++){
+	//如果字符串i位置的字符和字符串j+1位置的字符不相等,那么此时将j向前回退,直到j==0或者i指针与j+1指针遇到相同的字符
+	while(j>0 && s.charAt(i)!=s.charAt(j+1)){
+	j=next[j];
+	}
+	//如果字符串第i位置的字符和字符串j+1位置的字符相等时,那么此时将j++
+	if(s.charAt(i)==s.charAt(j+1)){
+	j++;
+	}
+	//将跟新后的j赋值给next数组的当前i位置
+	next[i]=j;		      	      
+	}
+	//如果字符串的总长度可以除尽最短公共字符串的长度那么此时在字符串中就存在重复的子字符串
+	if(next[n]>0 && n%(n-next[n])==0){
+	
+	return true;
+	}
+	return false;
+
+    }
+}
+	
+class Solution {
+    public boolean repeatedSubstringPattern(String s) {
+        if (s.equals("")) return false;
+        //获取字符串的长度
+        int len = s.length();
+        // 原串加个空格(哨兵)，使下标从1开始，这样j从0开始，也不用初始化了
+	//原本的j是初始化为-1的，这里在原字符串s的前面添加了" ",这样就可以初始化j为0了,
+        s = " " + s;
+	//将字符串转成字符数组
+        char[] chars = s.toCharArray();
+	//新建一个next数组，来存放当前next数组的值
+        int[] next = new int[len + 1];
+        // 构造 next 数组过程，j从0开始(空格)，i从2开始
+	//因为此时在字符串s前面添加了一个空格，所以j+1是从1开始的，所以此时j要从2开始
+        for (int i = 2, j = 0; i <= len; i++) {
+            // 匹配不成功，j回到前一位置 next 数组所对应的值
+            //当字符串i位置的值与字符串j+1位置的值不相等时，将j回退到前一个位置				       
+            while (j > 0 && chars[i] != chars[j + 1]) j = next[j];
+            // 匹配成功，j往后移
+	    //当字符串i位置的值和字符串j+1位置的值相等时,将j++,并且将新的值赋值给next数组的i位置
+            if (chars[i] == chars[j + 1]) j++;
+            // 更新 next 数组的值
+            next[i] = j;
+        }
+
+        // 最后判断是否是重复的子字符串，这里 next[len] 即代表next数组末尾的值
+	//next数组末尾的值表示的是当前字符串中最长公共前后缀的长度,用字符串的总长度-最长公共前后缀的长度就是当前字符串，如果这个值能够被字符串总长度整除，那么在字符串中
+	//就存在这个值为长度的重复子字符串
+        if (next[len] > 0 && len % (len - next[len]) == 0) {
+            return true;
+        }
+        return false;
+    }
+}	
+//232. 用栈实现队列
+/*请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（push、pop、peek、empty）：
+实现 MyQueue 类：
+void push(int x) 将元素 x 推到队列的末尾
+int pop() 从队列的开头移除并返回元素
+int peek() 返回队列开头的元素
+boolean empty() 如果队列为空，返回 true ；否则，返回 false
+说明：
+你只能使用标准的栈操作 —— 也就是只有 push to top, peek/pop from top, size, 和 is empty 操作是合法的。
+你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
+进阶：
+你能否实现每个操作均摊时间复杂度为 O(1) 的队列？换句话说，执行 n 个操作的总时间复杂度为 O(n) ，即使其中一个操作可能花费较长时间。
+示例：
+输入：
+["MyQueue", "push", "push", "peek", "pop", "empty"]
+[[], [1], [2], [], [], []]
+输出：
+[null, null, null, 1, 1, false]
+解释：
+MyQueue myQueue = new MyQueue();
+myQueue.push(1); // queue is: [1]
+myQueue.push(2); // queue is: [1, 2] (leftmost is front of the queue)
+myQueue.peek(); // return 1
+myQueue.pop(); // return 1, queue is [2]
+myQueue.empty(); // return false
+提示：
+1 <= x <= 9
+最多调用 100 次 push、pop、peek 和 empty
+假设所有操作都是有效的 （例如，一个空的队列不会调用 pop 或者 peek 操作）*/
+//队列是先进先出的	
+class MyQueue {
+    Stack<Integer> A;
+    Stack<Integer> B;	
+    public MyQueue() {
+    A=new Stack<Integer>();
+    B=new Stack<Integer>();	
+    }
+    
+    public void push(int x) {
+
+	A.push(x);
+	
+    }
+    
+    public int pop() {
+
+	if(B.isEmpty()){
+	while(!A.isEmpty()){
+	B.push(A.pop());
+	}
+	}
+	return B.pop();
+	
+    }
+    
+    public int peek() {
+        if(B.isEmpty()){
+	while(!A.isEmpty()){
+	B.push(A.pop());
+	}
+	}
+	return B.peek();
+    }
+    
+    public boolean empty() {
+
+	return 	A.isEmpty() && B.isEmpty();
+    }
+}
+
+/**
+ * Your MyQueue object will be instantiated and called as such:
+ * MyQueue obj = new MyQueue();
+ * obj.push(x);
+ * int param_2 = obj.pop();
+ * int param_3 = obj.peek();
+ * boolean param_4 = obj.empty();
+ */	
+//225. 用队列实现栈
+/*请你仅使用两个队列实现一个后入先出（LIFO）的栈，并支持普通栈的全部四种操作（push、top、pop 和 empty）。
+实现 MyStack 类：
+void push(int x) 将元素 x 压入栈顶。
+int pop() 移除并返回栈顶元素。
+int top() 返回栈顶元素。
+boolean empty() 如果栈是空的，返回 true ；否则，返回 false 。
+注意：
+你只能使用队列的基本操作 —— 也就是 push to back、peek/pop from front、size 和 is empty 这些操作。
+你所使用的语言也许不支持队列。 你可以使用 list （列表）或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
+示例：
+输入：
+["MyStack", "push", "push", "top", "pop", "empty"]
+[[], [1], [2], [], [], []]
+输出：
+[null, null, null, 2, 2, false]
+解释：
+MyStack myStack = new MyStack();
+myStack.push(1);
+myStack.push(2);
+myStack.top(); // 返回 2
+myStack.pop(); // 返回 2
+myStack.empty(); // 返回 False
+提示：
+1 <= x <= 9
+最多调用100 次 push、pop、top 和 empty
+每次调用 pop 和 top 都保证栈不为空
+进阶：你能否实现每种操作的均摊时间复杂度为 O(1) 的栈？换句话说，执行 n 个操作的总时间复杂度 O(n) ，尽管其中某个操作可能需要比其他操作更长的时间。你可以使用两个以上的队列。*/
+//栈是后进先出	
+class MyStack {
+Deque<Integer> A;
+Queue<Integer> B;	
+    public MyStack() {
+A=new LinkedList<Integer>();
+B=new LinkedList<Integer>();	
+    }
+    
+    public void push(int x) {
+
+	A.addLast(x);
+	
+    }
+    
+    public int pop() {
+
+	return A.removeLast();
+    }
+    
+    public int top() {
+	
+	return A.peekLast();
+
+    }
+    
+    public boolean empty() {
+
+	return A.isEmpty();
+    }
+}
+
+/**
+ * Your MyStack object will be instantiated and called as such:
+ * MyStack obj = new MyStack();
+ * obj.push(x);
+ * int param_2 = obj.pop();
+ * int param_3 = obj.top();
+ * boolean param_4 = obj.empty();
+ */	
+
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
