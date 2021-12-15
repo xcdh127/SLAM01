@@ -2942,7 +2942,186 @@ public int searchInsert(int[] nums, int target) {
 		     
 		     
 }
-}	    
+}
+	
+//541. 反转字符串 II
+/*给定一个字符串 s 和一个整数 k，从字符串开头算起，每计数至 2k 个字符，就反转这 2k 字符中的前 k 个字符。
+如果剩余字符少于 k 个，则将剩余字符全部反转。
+如果剩余字符小于 2k 但大于或等于 k 个，则反转前 k 个字符，其余字符保持原样。
+示例 1：
+输入：s = "abcdefg", k = 2
+输出："bacdfeg"
+示例 2：
+输入：s = "abcd", k = 2
+输出："bacd"
+提示：
+1 <= s.length <= 104
+s 仅由小写英文组成
+1 <= k <= 104*/
+class Solution {
+    public String reverseStr(String s, int k) {
+          int n=s.length();
+	char[] ch=s.toCharArray();
+	//每2k个字符统计一次字符串
+	for(int i=0;i<n;i+=2*k){
+	//字符串开始截取的位置		   
+	int start=i;
+	//字符串截取结束的位置(这里的截取技巧是取当前字符串开始位置+k之后的位置，与整个字符串结尾的位置进行比较,如果字符串结尾的位置小于当前字符串+k之后的位置时,就意味着
+	//当前字符串补助k个,应当反转后面所有的字符,当字符串的结束位置大于等于当前位置+k后的位置时,就直接截取当前位置反转即可 )		   
+	int end=Math.min(n-1,start+k-1);
+	//此处反转符合要求的k个字符串		   
+	reverse(ch,start,end);		   
+        }
+	//将按照要求反转中之后的字符数组，转换成字符串返回		   
+	return new String(ch);
+	
+			
+    }
+		
+		public void swap(char[] ch,int a,int b){
+		
+			char temp=ch[a];
+			ch[a]=ch[b];
+			ch[b]=temp;
+			
+		}
+		
+		public void reverse(char[] ch,int start,int end){
+		
+			while(start<end){
+			
+				swap(ch,start,end);
+				start++;
+				end--;
+			}
+		
+		}
+		
+}
+"abcdefg"
+2
+输出：
+"bacdefg"
+预期结果：
+"bacdfeg"	
+/*
+输入
+"abcdefg"
+2
+输出
+"cbadefg"
+预期结果
+"bacdfeg"
+	*/
+
+
+//解法二（似乎更容易理解点）
+//题目的意思其实概括为 每隔2k个反转前k个，尾数不够k个时候全部反转
+class Solution {
+    public String reverseStr(String s, int k) {
+        char[] ch = s.toCharArray();
+	//从下标0开始,每一次移动2k个字符位置，题意是每2k个字符翻转前k个字符，不足k个字符时，翻转剩余的全部字符
+        for(int i = 0; i < ch.length; i += 2 * k){
+            //字符串开始的位置				     
+            int start = i;
+            //这里是判断尾数够不够k个来取决end指针的位置
+            //字符串结尾的位置,当字符串结尾的位置不足k个字符时,直接翻转的字符串的末尾位置，意思是不足K个字符我就将剩余的字符全部翻转				     
+            int end = Math.min(ch.length - 1, start + k - 1);
+            //用异或运算反转 
+            while(start < end){
+                ch[start] ^= ch[end];
+                ch[end] ^= ch[start];
+                ch[start] ^= ch[end];
+                start++;
+                end--;
+            }
+        }
+        return new String(ch);
+    }
+}	
+//剑指 Offer 05. 替换空格
+/*现一个函数，把字符串 s 中的每个空格替换成"%20"。
+示例 1：
+输入：s = "We are happy."
+输出："We%20are%20happy."
+限制：
+0 <= s 的长度 <= 10000*/
+class Solution {
+    public String replaceSpace(String s) {
+
+	StringBuilder sb=new StringBuilder();
+	char[] ch=s.toCharArray();
+	int n=ch.length;
+	for(int i=0;i<n;i++){
+	if(ch[i]==' '){
+	sb.append("%20");		      
+	}
+	else{
+	sb.append(ch[i]);		      
+	}		      
+			      
+        }
+	return sb.toString();
+    }
+}
+//151. 翻转字符串里的单词
+/*给你一个字符串 s ，逐个翻转字符串中的所有 单词 。
+单词 是由非空格字符组成的字符串。s 中使用至少一个空格将字符串中的 单词 分隔开。
+请你返回一个翻转 s 中单词顺序并用单个空格相连的字符串。
+说明：
+输入字符串 s 可以在前面、后面或者单词间包含多余的空格。
+翻转后单词间应当仅用一个空格分隔。
+翻转后的字符串中不应包含额外的空格。
+示例 1：
+输入：s = "the sky is blue"
+输出："blue is sky the"
+示例 2：
+输入：s = "  hello world  "
+输出："world hello"
+解释：输入字符串可以在前面或者后面包含多余的空格，但是翻转后的字符不能包括。
+示例 3：
+输入：s = "a good   example"
+输出："example good a"
+解释：如果两个单词间有多余的空格，将翻转后单词间的空格减少到只含一个。
+示例 4：
+输入：s = "  Bob    Loves  Alice   "
+输出："Alice Loves Bob"
+示例 5：
+输入：s = "Alice does not even like bob"
+输出："bob like even not does Alice"
+提示：
+1 <= s.length <= 104
+s 包含英文大小写字母、数字和空格 ' '
+s 中 至少存在一个 单词
+进阶：
+请尝试使用 O(1) 额外空间复杂度的原地解法。*/
+//定义两个指针来反转字符串中空格隔开的单词，将两个指针指向字符串的末尾，
+//当指针j指向非空格字符时就向前指向,当指针j指向空格时,停止，进行单词的截取工作，注意字符串字串截取函数是一个左闭右开的区间
+//当截取字符串的区间是[j+1,i+1)
+//然后将指针j的位置赋值给指针i的位置，进行处理下一个单词位置
+//直到指针j指到区间的开始位置,由于最后会多再字符串的末尾加上一个空格,所以我们要将这个空格从字符串中删除,最后将完成反转后的字符串返回		   
+class Solution {
+    public String reverseWords(String s) {
+s=s.trim();
+int n=s.length();
+StringBuilder sb=new StringBuilder();		   
+int i=n-1;
+int j=n-1;
+while(j>=0){
+
+while(j>=0 && s.charAt(j)!=' '){
+j--;	
+}	
+sb.append(s.substring(j+1,i+1)+" ");	
+while(j>=0 && s.charAt(j)==' '){
+j--;	
+}	
+i=j;	
+}		   
+sb.deleteCharAt(sb.length()-1);
+return sb.toString();	
+    }
+}		   
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
