@@ -3121,7 +3121,138 @@ i=j;
 sb.deleteCharAt(sb.length()-1);
 return sb.toString();	
     }
-}		   
+}	
+//剑指 Offer 58 - II. 左旋转字符串
+/*字符串的左旋转操作是把字符串前面的若干个字符转移到字符串的尾部。请定义一个函数实现字符串左旋转操作的功能。
+比如，输入字符串"abcdefg"和数字2，该函数将返回左旋转两位得到的结果"cdefgab"。
+示例 1：
+输入: s = "abcdefg", k = 2
+输出: "cdefgab"
+示例 2：
+输入: s = "lrloseumgh", k = 6
+输出: "umghlrlose"
+限制：
+1 <= k < s.length <= 10000*/
+class Solution {
+    public String reverseLeftWords(String s, int n) {
+
+int len=s.length();			  
+StringBuilder sb=new StringBuilder();
+//截取子函数的函数是左闭右开的，截取字符串s[n,len-1]位置的字符串，这一部分在前面出现，所以这一部分先截取出来放进sb中			  
+sb.append(s.substring(n,len));
+//截取字符串s[0,n-1]位置的字符串,这一部分在后面出现，所以这一部分后截取出来放进sb中			  
+sb.append(s.substring(0,n));			  
+return sb.toString();   
+    }
+}			 
+//28. 实现 strStr()
+/*实现 strStr() 函数。
+给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串出现的第一个位置（下标从 0 开始）。如果不存在，则返回  -1 。
+说明：
+当 needle 是空字符串时，我们应当返回什么值呢？这是一个在面试中很好的问题。
+对于本题而言，当 needle 是空字符串时我们应当返回 0 。这与 C 语言的 strstr() 以及 Java 的 indexOf() 定义相符。
+示例 1：
+输入：haystack = "hello", needle = "ll"
+输出：2
+示例 2：
+输入：haystack = "aaaaa", needle = "bba"
+输出：-1
+示例 3：
+输入：haystack = "", needle = ""
+输出：0
+提示：
+0 <= haystack.length, needle.length <= 5 * 104
+haystack 和 needle 仅由小写英文字符组成*/
+class Solution {
+    public int strStr(String haystack, String needle) {
+int m=haystack.length();
+int n=needle.length();
+				       
+if(n==0){
+return 0;				       
+}
+//为字符串needle建立next数组				       
+int[] next=new int[needle.length()];
+getNext(next,needle);
+int j=-1;				       
+for(int i=0;i<m;i++){
+//当前缀字符和后缀字符不相等时,回退到前一个位置		
+while(j>=0 && haystack.charAt(i)!=needle.charAt(j+1)){
+	j=next[j];
+}	
+//当前缀字符和后缀字符	
+if(haystack.charAt(i)==needle.charAt(j+1)){
+j++;	
+}
+//在当前字符串中找到目标字符串
+if(j==needle.length()-1){
+return i-needle.length()+1;	
+}	
+}				       
+				       
+return -1;				       
+    }
+				       
+public void getNext(int[] next,String s){
+int j=-1;
+int n=s.length();				       
+next[0]=j;
+for(int i=1;i<n;i++){
+//当前缀开始单词与后缀开始字符不相同时，就向前回退	
+while(j>=0 && s.charAt(i)!=s.charAt(j+1)){
+j=next[j];	
+
+}	
+//如果前缀开始的字符和后缀开始的字符不相同时,就将j++，然后并且将这个值赋值给对应位置的next数组,来记录这个位置的值
+if(s.charAt(i)==s.charAt(j+1)){
+j++;	
+}
+next[i]=j;	
+}				       
+
+}				       
+				       			       
+}	
+	
+// 方法一
+class Solution {
+    public void getNext(int[] next, String s){
+        int j = -1;
+        next[0] = j;
+        for (int i = 1; i<s.length(); i++){
+            while(j>=0 && s.charAt(i) != s.charAt(j+1)){
+                j=next[j];
+            }
+
+            if(s.charAt(i)==s.charAt(j+1)){
+                j++;
+            }
+            next[i] = j;
+        }
+    }
+    public int strStr(String haystack, String needle) {
+        if(needle.length()==0){
+            return 0;
+        }
+
+        int[] next = new int[needle.length()];
+        getNext(next, needle);
+        int j = -1;
+        for(int i = 0; i<haystack.length();i++){
+            while(j>=0 && haystack.charAt(i) != needle.charAt(j+1)){
+                j = next[j];
+            }
+            if(haystack.charAt(i)==needle.charAt(j+1)){
+                j++;
+            }
+            if(j==needle.length()-1){
+                return (i-needle.length()+1);
+            }
+        }
+
+        return -1;
+    }
+}	
 /* This file is part of the SceneLib2 Project.
  * http://hanmekim.blogspot.com/2012/10/scenelib2-monoslam-open-source-library.html
  * https://github.com/hanmekim/SceneLib2
